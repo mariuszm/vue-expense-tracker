@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Toaster, toast } from 'vue-sonner'
 import AppHeader from './components/AppHeader.vue'
 import Balance from './components/Balance.vue'
 import IncomeExpenses from './components/IncomeExpenses.vue'
@@ -33,14 +34,27 @@ const expenses = computed(() =>
     .reduce((acc, transaction) => acc + transaction.amount, 0)
     .toFixed(2)
 )
+
+const handleTransactionSubmitted = (transactionData) => {
+  transactions.value.push({
+    id: generateUniqueId(),
+    text: transactionData.text,
+    amount: transactionData.amount
+  })
+
+  toast.success('Transaction added')
+}
+
+const generateUniqueId = () => Math.floor(Math.random() * 1000000)
 </script>
 
 <template>
+  <Toaster richColors />
   <AppHeader />
   <div class="container">
     <Balance :total="+total" />
     <IncomeExpenses :income="+income" :expenses="+expenses" />
     <TransactionList :transactions="transactions" />
-    <AddTransaction />
+    <AddTransaction @transactionSubmitted="handleTransactionSubmitted" />
   </div>
 </template>
